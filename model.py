@@ -15,8 +15,8 @@ class Model:
         self.J = 0.0197
         self.d = 3.7
         self.B = 0.82
-        self.cf = 11.45
-        self.mf = 1.0275
+        self.cF = 11.45
+        self.mF = 1.0275
         self.av = 1.33
         self.fv1 = 0.18
         self.fv2 = 0.023
@@ -41,45 +41,52 @@ class Model:
         self.af = af 
         self.af1 = af1
         self.x = [self.fact, self.af, self.af1]
+        self.g = 9.81
 
     def get_torque_grav(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return: Gravity torque of the foot around the ankle
         """
-        # Use simulation plan equation
-        pass
+        Tgrav = -self.mF*self.cF*self.g*np.cos(self.x[1])
+        return Tgrav
 
     def get_torque_acc(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return: Torque induced by the movement of the ankle
         """
-        # Use simulation plan equation
-        pass
+        Tacc = self.mF*self.cF*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
+        return Tacc
 
     def get_torque_ela(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return: Passive elastic torque around the ankle due to passive muscles and tissues
         """
-        # Use simulation plan equation
-        pass
+        Tela = np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
+        return Tela
 
     def get_force_fl(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return:
         """
         # Use simulation plan equation
         pass
     
     def get_force_fv(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return:
         """
         # Use simulation plan equation
         return
 
     def get_length_mt(self, x):
         """
-        :param x: x param
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :return:
         """
         # Use simulation plan equation
         pass
@@ -87,7 +94,7 @@ class Model:
     def get_derivative(self, t, x):
         """
         :param t: time
-        :param x: state variables [X1, X2, X3]
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: time derivatives of state variables
         """
         pass
