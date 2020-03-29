@@ -10,6 +10,37 @@ class Model:
 
     def __init__(self):
         # Constants mentioned in simulation plan
+        self.Tact = 0.01
+        self.Tdeact = 0.04
+        self.J = 0.0197
+        self.d = 3.7
+        self.B = 0.82
+        self.cf = 11.45
+        self.mf = 1.0275
+        self.av = 1.33
+        self.fv1 = 0.18
+        self.fv2 = 0.023
+        self.vmax = -0.9
+        self.fmax = 600
+        self.w = 0.56
+        self.lt = 22.3
+        self.lmt = 32.1
+        self.a1 = 2.1
+        self.a2 = -0.08
+        self.a3 = -7.97
+        self.a4 = 0.19
+        self.a5 = -1.79
+        self.a = [self.a1, self.a2, self.a3, self.a4, self.a5]
+        self.u = u
+        self.ax = ax
+        self.az = az
+        self.ashank = ashank
+        self.ashank1 = ashank1
+        self.x_ext = [self.ax, self.az, self.ashank, self.ashank1]
+        self.fact = fact
+        self.af = af 
+        self.af1 = af1
+        self.x = [self.fact, self.af, self.af1]
         pass
 
     def get_torque_grav(self, x):
