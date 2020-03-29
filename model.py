@@ -94,5 +94,5 @@ if __name__ == '__main__':
     model = Model()
     
     # Simulate Model
-    t, x = model.simulate(5)
+    t, x = model.simulate(10)
     plot_graphs(model, t, x)
