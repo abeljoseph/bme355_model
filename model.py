@@ -41,7 +41,6 @@ class Model:
         self.af = af 
         self.af1 = af1
         self.x = [self.fact, self.af, self.af1]
-        pass
 
     def get_torque_grav(self, x):
         """
