@@ -10,35 +10,35 @@ class Model:
 
     def __init__(self):
         # Constants mentioned in simulation plan
-        return
+        pass
 
     def get_torque_grav(self, x):
         """
         :param x: x param
         """
         # Use simulation plan equation
-        return
+        pass
 
     def get_torque_acc(self, x):
         """
         :param x: x param
         """
         # Use simulation plan equation
-        return
+        pass
 
     def get_torque_ela(self, x):
         """
         :param x: x param
         """
         # Use simulation plan equation
-        return
+        pass
 
     def get_force_fl(self, x):
         """
         :param x: x param
         """
         # Use simulation plan equation
-        return
+        pass
     
     def get_force_fv(self, x):
         """
@@ -52,7 +52,7 @@ class Model:
         :param x: x param
         """
         # Use simulation plan equation
-        return
+        pass
 
     def get_derivative(self, t, x):
         """
@@ -60,7 +60,7 @@ class Model:
         :param x: state variables [X1, X2, X3]
         :return: time derivatives of state variables
         """
-        return
+        pass
 
     def simulate(self, total_time):
         """
@@ -86,7 +86,7 @@ def plot_graphs(model, time, states):
     # plt.xlabel('Time (s)')
     # plt.legend(loc='upper left')
     # plt.show()
-    return
+    pass
 
 
 if __name__ == '__main__':
