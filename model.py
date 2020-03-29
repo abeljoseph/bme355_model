@@ -54,7 +54,7 @@ class Model:
         # Use simulation plan equation
         return
 
-      def get_derivative(self, t, x):
+    def get_derivative(self, t, x):
         """
         :param t: time
         :param x: state variables [X1, X2, X3]
