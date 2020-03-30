@@ -75,16 +75,21 @@ class Model:
         :return:
         """
         w, l_ce, l_ce_opt = self.w, self.l_ce, self.l_ce_opt
+
+        # TODO: remove error handling after l_ce_opt is implemented
         try: return exp(-(-(l_ce - l_ce_opt)/w * l_ce_opt)**2) / (self.x_ext[2] - x[1])
         except TypeError: print("Ensure that model.l_ce_opt is defined.")
     
-    def get_force_fv(self,x):
+    def get_force_fv(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        # Use simulation plan equation
-        return
+        v_ce = self.d * (self.x_ext[3] - x[3])  # contraction speed
+        v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
+        if v_ce < 0:
+            return ((1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))) / (self.x_ext[3] - x[2])
+        return ((1 + a_v*(v_ce/f_v2)) / (1 + v_ce/f_v2)) / (self.x_ext[3] - x[2])
 
     def get_force_m(self, x):
         f_fl, f_fv = self.get_force_fl(x), self.get_force_fv(x)
