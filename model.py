@@ -28,6 +28,7 @@ class Model:
         self.l_mt0 = 32.1
         self.l_ce = self.l_mt0 - self.l_t
         self.l_ce_opt = None  # TODO: Define
+        self.l_foot = 0.26 #m
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
@@ -103,6 +104,9 @@ class Model:
         :return:
         """
         return self.l_mt0 + (self.x_ext[2] - x[1])*self.d
+
+    def get_toe_height(self, ankle_height, ankle_angle):
+        return ankle_height - l_foot*np.sin(ankle_angle)
 
     def get_derivative(self, t, x, u):
         """
