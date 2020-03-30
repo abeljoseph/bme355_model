@@ -31,6 +31,7 @@ class Model:
         self.a4 = 0.19
         self.a5 = -1.79
         self.a = [self.a1, self.a2, self.a3, self.a4, self.a5]
+        self.g = 9.81
 
         # TODO: Define these variables
         self.u = u
@@ -43,31 +44,28 @@ class Model:
         self.a_f = a_f
         self.a_f1 = a_f1
         self.x = [self.f_act, self.a_f, self.a_f1]
-        self.g = 9.81
 
     def get_torque_grav(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Gravity torque of the foot around the ankle
         """
-        T_grav = -self.m_F*self.c_F*self.g*np.cos(self.x[1])
-        return T_grav
+        return -self.m_F*self.c_F*self.g*np.cos(self.x[1])
+
 
     def get_torque_acc(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        T_acc = self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
-        return T_acc
+        return self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos(self.x[1]))
 
     def get_torque_ela(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Passive elastic torque around the ankle due to passive muscles and tissues
         """
-        T_ela = np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
-        return T_ela
+        return np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
 
     def get_force_fl(self, x):
         """
@@ -90,8 +88,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        # Use simulation plan equation
-        pass
+        return self.l_mt0 + (self.x_ext[2] - self.x[1])*self.d
 
     def get_derivative(self, t, x):
         """
