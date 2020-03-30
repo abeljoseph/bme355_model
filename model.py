@@ -10,37 +10,39 @@ class Model:
 
     def __init__(self):
         # Constants mentioned in simulation plan
-        self.Tact = 0.01
-        self.Tdeact = 0.04
+        self.T_act = 0.01
+        self.T_deact = 0.04
         self.J = 0.0197
         self.d = 3.7
         self.B = 0.82
-        self.cF = 11.45
-        self.mF = 1.0275
-        self.av = 1.33
-        self.fv1 = 0.18
-        self.fv2 = 0.023
-        self.vmax = -0.9
-        self.fmax = 600
+        self.c_F = 11.45
+        self.m_F = 1.0275
+        self.a_v = 1.33
+        self.f_v1 = 0.18
+        self.f_v2 = 0.023
+        self.v_max = -0.9
+        self.f_max = 600
         self.w = 0.56
-        self.lt = 22.3
-        self.lmt = 32.1
+        self.l_t = 22.3
+        self.l_mt0 = 32.1
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
         self.a4 = 0.19
         self.a5 = -1.79
         self.a = [self.a1, self.a2, self.a3, self.a4, self.a5]
+
+        # TODO: Define these variables
         self.u = u
         self.ax = ax
         self.az = az
-        self.ashank = ashank
-        self.ashank1 = ashank1
-        self.x_ext = [self.ax, self.az, self.ashank, self.ashank1]
-        self.fact = fact
-        self.af = af 
-        self.af1 = af1
-        self.x = [self.fact, self.af, self.af1]
+        self.a_shank = a_shank
+        self.a_shank1 = a_shank1
+        self.x_ext = [self.ax, self.az, self.a_shank, self.a_shank1]
+        self.f_act = f_act
+        self.a_f = a_f
+        self.a_f1 = a_f1
+        self.x = [self.f_act, self.a_f, self.a_f1]
         self.g = 9.81
 
     def get_torque_grav(self, x):
@@ -48,7 +50,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Gravity torque of the foot around the ankle
         """
-        Tgrav = -self.mF*self.cF*self.g*np.cos(self.x[1])
+        Tgrav = -self.m_F*self.c_F*self.g*np.cos(self.x[1])
         return Tgrav
 
     def get_torque_acc(self, x):
@@ -56,7 +58,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        Tacc = self.mF*self.cF*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
+        Tacc = self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
         return Tacc
 
     def get_torque_ela(self, x):
