@@ -25,6 +25,7 @@ class Model:
         self.w = 0.56
         self.l_t = 22.3
         self.l_mt0 = 32.1
+        self.l_ce = self.l_mt0 - self.l_t
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
@@ -52,7 +53,6 @@ class Model:
         """
         return -self.m_F*self.c_F*self.g*np.cos(self.x[1])
 
-
     def get_torque_acc(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
@@ -67,7 +67,7 @@ class Model:
         """
         return np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
 
-    def get_force_fl(self, x):
+    def get_force_fl(self):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
@@ -75,13 +75,17 @@ class Model:
         # Use simulation plan equation
         pass
     
-    def get_force_fv(self, x):
+    def get_force_fv(self):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
         # Use simulation plan equation
         return
+
+    def get_force_m(self, x):
+        f_fl, f_fv = self.get_force_fl(), self.get_force_fv()
+        return self.x[0] * self.f_max * f_fl * (self.x_ext[2] - x[1]) * f_fv * (self.x_ext[3] - x[2])
 
     def get_length_mt(self, x):
         """
