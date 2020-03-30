@@ -27,7 +27,7 @@ class Model:
         self.l_t = 22.3
         self.l_mt0 = 32.1
         self.l_ce = self.l_mt0 - self.l_t
-        self.l_ce_opt = None  # TODO: define
+        self.l_ce_opt = None  # TODO: Define
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
@@ -44,6 +44,8 @@ class Model:
         self.a_shank1 = a_shank1
         self.x_ext = [self.ax, self.az, self.a_shank, self.a_shank1]
         self.f_act = f_act
+
+        # TODO: Determine whether to remove these
         self.a_f = a_f
         self.a_f1 = a_f1
         self.x = [self.f_act, self.a_f, self.a_f1]
@@ -53,21 +55,21 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Gravity torque of the foot around the ankle
         """
-        return -self.m_F*self.c_F*self.g*np.cos(self.x[1])
+        return -self.m_F*self.c_F*self.g*np.cos(x[1])
 
     def get_torque_acc(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        return self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos(self.x[1]))
+        return self.m_F*self.c_F*(self.x_ext[0]*np.sin(x[1]) - self.x_ext[1]*np.cos(x[1]))
 
     def get_torque_ela(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Passive elastic torque around the ankle due to passive muscles and tissues
         """
-        return np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
+        return np.exp(self.a1 + self.a2 * x[1]) - np.exp(self.a3 + self.a4 * x[1]) + self.a5
 
     def get_force_fl(self, x):
         """
@@ -76,7 +78,7 @@ class Model:
         """
         w, l_ce, l_ce_opt = self.w, self.l_ce, self.l_ce_opt
 
-        # TODO: remove error handling after l_ce_opt is implemented
+        # TODO: Remove error handling after l_ce_opt is implemented
         try: return exp(-(-(l_ce - l_ce_opt)/w * l_ce_opt)**2) / (self.x_ext[2] - x[1])
         except TypeError: print("Ensure that model.l_ce_opt is defined.")
     
@@ -93,14 +95,14 @@ class Model:
 
     def get_force_m(self, x):
         f_fl, f_fv = self.get_force_fl(x), self.get_force_fv(x)
-        return self.x[0] * self.f_max * f_fl * (self.x_ext[2] - x[1]) * f_fv * (self.x_ext[3] - x[2])
+        return x[0] * self.f_max * f_fl * (self.x_ext[2] - x[1]) * f_fv * (self.x_ext[3] - x[2])
 
     def get_length_mt(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        return self.l_mt0 + (self.x_ext[2] - self.x[1])*self.d
+        return self.l_mt0 + (self.x_ext[2] - x[1])*self.d
 
     def get_derivative(self, t, x, u):
         """
