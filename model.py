@@ -106,7 +106,7 @@ class Model:
         return self.l_mt0 + (self.x_ext[2] - x[1])*self.d
 
     def get_toe_height(self, ankle_height, ankle_angle):
-        return ankle_height - l_foot*np.sin(ankle_angle)
+        return ankle_height - self.l_foot*np.sin(ankle_angle)
 
     def get_derivative(self, t, x, u):
         """
