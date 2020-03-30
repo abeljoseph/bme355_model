@@ -90,13 +90,16 @@ class Model:
         """
         return self.l_mt0 + (self.x_ext[2] - self.x[1])*self.d
 
-    def get_derivative(self, t, x):
+    def get_derivative(self, t, x, u):
         """
         :param t: time
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: time derivatives of state variables
         """
-        pass
+        return [(u - x[0]) * (u/self.T_act - (1 - u)/self.T_deact),
+                x[2],
+                (1/self.J) * self.get_force_m(x[0])*self.d + self.get_torque_grav(x) + self.get_torque_acc(x) + self.get_torque_ela(x)]
+        
 
     def simulate(self, total_time):
         """
