@@ -50,24 +50,24 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Gravity torque of the foot around the ankle
         """
-        Tgrav = -self.m_F*self.c_F*self.g*np.cos(self.x[1])
-        return Tgrav
+        T_grav = -self.m_F*self.c_F*self.g*np.cos(self.x[1])
+        return T_grav
 
     def get_torque_acc(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        Tacc = self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
-        return Tacc
+        T_acc = self.m_F*self.c_F*(self.x_ext[0]*np.sin(self.x[1]) - self.x_ext[1]*np.cos[self.x[1]])
+        return T_acc
 
     def get_torque_ela(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Passive elastic torque around the ankle due to passive muscles and tissues
         """
-        Tela = np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
-        return Tela
+        T_ela = np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
+        return T_ela
 
     def get_force_fl(self, x):
         """
