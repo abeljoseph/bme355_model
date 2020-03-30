@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from math import exp
 import matplotlib.pyplot as plt
 
 
@@ -26,6 +27,7 @@ class Model:
         self.l_t = 22.3
         self.l_mt0 = 32.1
         self.l_ce = self.l_mt0 - self.l_t
+        self.l_ce_opt = None  # TODO: define
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
@@ -67,15 +69,16 @@ class Model:
         """
         return np.exp(self.a1 + self.a2*self.x[1]) - np.exp(self.a3 + self.a4*self.x[1]) + self.a5
 
-    def get_force_fl(self):
+    def get_force_fl(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        # Use simulation plan equation
-        pass
+        w, l_ce, l_ce_opt = self.w, self.l_ce, self.l_ce_opt
+        try: return exp(-(-(l_ce - l_ce_opt)/w * l_ce_opt)**2) / (self.x_ext[2] - x[1])
+        except TypeError: print("Ensure that model.l_ce_opt is defined.")
     
-    def get_force_fv(self):
+    def get_force_fv(self,x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
@@ -84,7 +87,7 @@ class Model:
         return
 
     def get_force_m(self, x):
-        f_fl, f_fv = self.get_force_fl(), self.get_force_fv()
+        f_fl, f_fv = self.get_force_fl(x), self.get_force_fv(x)
         return self.x[0] * self.f_max * f_fl * (self.x_ext[2] - x[1]) * f_fv * (self.x_ext[3] - x[2])
 
     def get_length_mt(self, x):
@@ -103,7 +106,6 @@ class Model:
         return [(u - x[0]) * (u/self.T_act - (1 - u)/self.T_deact),
                 x[2],
                 (1/self.J) * self.get_force_m(x[0])*self.d + self.get_torque_grav(x) + self.get_torque_acc(x) + self.get_torque_ela(x)]
-        
 
     def simulate(self, total_time):
         """
