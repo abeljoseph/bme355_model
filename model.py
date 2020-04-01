@@ -14,9 +14,9 @@ class Model:
         self.T_act = 0.01
         self.T_deact = 0.04
         self.J = 0.0197
-        self.d = 3.7
+        self.d = 0.037
         self.B = 0.82
-        self.c_F = 11.45
+        self.c_F = 0.1145
         self.m_F = 1.0275
         self.a_v = 1.33
         self.f_v1 = 0.18
@@ -24,9 +24,9 @@ class Model:
         self.v_max = -0.9
         self.f_max = 600
         self.w = 0.56
-        self.l_t = 22.3
-        self.l_mt0 = 32.1
-        self.l_ce_opt = self.l_mt0 - self.l_t
+        self.l_t = 0.223
+        self.l_mt0 = 0.321
+        self.l_ce_opt = self.l_mt0 - self.l_t #TODO: Verify this value
         self.l_foot = 0.26 #m
         self.a1 = 2.1
         self.a2 = -0.08
@@ -75,14 +75,14 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Gravity torque of the foot around the ankle
         """
-        return -self.m_F*self.c_F*self.g*np.cos(x[1])
+        return -self.m_F*self.c_F*self.g*np.cos(np.deg2rad(x[1]))
 
     def get_torque_acc(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        return self.m_F*self.c_F*(x_ext[0]*np.sin(np.deg2rad(x[1])) - x_ext[1]*np.cos(x[1]))
+        return self.m_F*self.c_F*(x_ext[0]*np.sin(np.deg2rad(x[1])) - x_ext[1]*np.cos(np.deg2rad(x[1])))
 
     def get_torque_ela(self, x):
         """
@@ -97,10 +97,7 @@ class Model:
         :return:
         """
         w, l_ce, l_ce_opt = self.w, self.get_length_ce(x, x_ext), self.l_ce_opt
-
-        # TODO: Remove error handling after l_ce_opt is implemented
-        try: return exp(-(-(l_ce - l_ce_opt)/w * l_ce_opt)**2) / (x_ext[2] - x[1])
-        except TypeError: print("Ensure that model.l_ce_opt is defined.")
+        return exp((-((l_ce - l_ce_opt) / (w * l_ce_opt))**2))
     
     def get_force_fv(self, x, x_ext):
         """
@@ -110,12 +107,12 @@ class Model:
         v_ce = self.d * (x_ext[3] - x[2])  # contraction speed
         v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
         if v_ce < 0:
-            return ((1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))) / (x_ext[3] - x[2])
-        return ((1 + a_v*(v_ce/f_v2)) / (1 + v_ce/f_v2)) / (x_ext[3] - x[2])
+            return (1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))
+        return (1 + a_v*(v_ce/f_v2)) / (1 + v_ce/f_v2)
 
     def get_force_m(self, x, x_ext):
         f_fl, f_fv = self.get_force_fl(x, x_ext), self.get_force_fv(x, x_ext)
-        return x[0] * self.f_max * f_fl * (x_ext[2] - x[1]) * f_fv * (x_ext[3] - x[2])
+        return x[0] * self.f_max * f_fl * f_fv
 
     def get_length_mt(self, x, x_ext):
         """
@@ -138,7 +135,7 @@ class Model:
                 ankle_data.append([float(x) for x in list(str(line).strip().split(','))])
         ankle_height = [i[1] for i in ankle_data]
 
-        return ankle_height - self.l_foot*np.sin(np.deg2rad(ankle_angle))
+        return ankle_height[:len(ankle_angle)] - self.l_foot*np.sin(np.deg2rad(ankle_angle))
 
     def get_derivative(self, t, x):
         """
@@ -151,7 +148,7 @@ class Model:
 
         return [(u - x[0]) * (u/self.T_act - (1 - u)/self.T_deact),
                 x[2],
-                (1/self.J) * self.get_force_m(x, x_ext)*self.d + self.get_torque_grav(x) + self.get_torque_acc(x, x_ext) + self.get_torque_ela(x)]
+                (1/self.J) * (self.get_force_m(x, x_ext)*self.d + self.get_torque_grav(x) + self.get_torque_acc(x, x_ext) + self.get_torque_ela(x) + self.B*(x_ext[3]-x[2]))]
 
     def simulate(self):
         """
@@ -203,7 +200,8 @@ if __name__ == '__main__':
     # Initiate Model
     model = Model()    
     # Simulate Model
-    u_profile_1 = [0.5 for i in range(351)]
+    u_profile_1 = [0 for i in range(351)]
+    # u_profile_1 = np.concatenate(([0 for i in range(176)], [0.6 for i in range(175)]))
     model.set_u_profile(u_profile_1)
     t, x = model.simulate()
     plot_graphs(model, t, x)

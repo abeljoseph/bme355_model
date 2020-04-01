@@ -12,7 +12,7 @@ with open('data_files/'+filename) as f:
 x = [i[0]-data[0][0] for i in data]
 y = [i[1] for i in data]
 
-xnew = np.linspace(0, 0.35, 353)
+xnew = np.linspace(0, 0.35, 356)
 eq = np.polyfit(x, y, degree)
 ynew = 0
 for i,j in zip(range(len(eq)-1, -1, -1), range(0, len(eq))):
