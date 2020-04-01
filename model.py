@@ -157,8 +157,8 @@ class Model:
         """
         # Initial State based off paper
         f_act = 0
-        a_f = 0
-        a_f1 = -15
+        a_f = -15
+        a_f1 = 0
         y0 = [f_act, a_f, a_f1]
 
         t_span = (0, self.total_sim_time)
