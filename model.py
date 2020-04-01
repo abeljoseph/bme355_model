@@ -97,7 +97,7 @@ class Model:
         :return:
         """
         w, l_ce, l_ce_opt = self.w, self.get_length_ce(x, x_ext), self.l_ce_opt
-        return exp((-((l_ce - l_ce_opt) / (w * l_ce_opt))**2))
+        return exp(-(((l_ce - l_ce_opt) / (w * l_ce_opt))**2))
     
     def get_force_fv(self, x, x_ext):
         """
@@ -135,7 +135,7 @@ class Model:
                 ankle_data.append([float(x) for x in list(str(line).strip().split(','))])
         ankle_height = [i[1] for i in ankle_data]
 
-        return ankle_height[:len(ankle_angle)] - self.l_foot*np.sin(np.deg2rad(ankle_angle))
+        return ankle_height[:len(ankle_angle)] + self.l_foot*np.sin(np.deg2rad(ankle_angle))
 
     def get_derivative(self, t, x):
         """
@@ -157,7 +157,7 @@ class Model:
         """
         # Initial State based off paper
         f_act = 0
-        a_f = -15
+        a_f = -45
         a_f1 = 0
         y0 = [f_act, a_f, a_f1]
 
