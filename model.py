@@ -193,7 +193,7 @@ def plot_graphs(model, time, states):
     plt.title('Height of Toe versus Time')
     plt.plot(time, toe_height, 'r')
     plt.xlabel('Time(s)')
-    plt.ylabel('Toe Height (m)')
+    plt.ylabel('Toe Height (mm)')
     plt.tight_layout()
 
     plt.show()
