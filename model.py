@@ -107,7 +107,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        v_ce = self.d * (self.x_ext[3] - x[2])  # contraction speed
+        v_ce = self.d * (x_ext[3] - x[2])  # contraction speed
         v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
         if v_ce < 0:
             return ((1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))) / (x_ext[3] - x[2])
@@ -131,7 +131,13 @@ class Model:
         """
         return self.get_length_mt(x, x_ext) - self.l_t
 
-    def get_toe_height(self, ankle_height, ankle_angle):
+    def get_toe_height(self, ankle_angle):
+        ankle_data = []
+        with open('data_files/ankle_height_interpolated.csv') as f:
+            for line in f:
+                ankle_data.append([float(x) for x in list(str(line).strip().split(','))])
+        ankle_height = [i[1] for i in ankle_data]
+
         return ankle_height - self.l_foot*np.sin(ankle_angle)
 
     def get_derivative(self, t, x):
@@ -166,19 +172,30 @@ class Model:
 
 
 def plot_graphs(model, time, states):
+    # State Graphs
     plt.figure()
     plt.title('States of Foot versus Time')
-    plt.subplot(2, 1, 1)
+    plt.subplot(3, 1, 1)
     plt.plot(time, states[:, 0], 'k')
     plt.ylabel('Activation Level')
-    plt.subplot(2, 1, 2)
+    plt.subplot(3, 1, 2)
     plt.plot(time, states[:, 1], 'g')
     plt.ylabel('Absolute Orientation wrt Horizontal Axis (deg)')
-    plt.subplot(2, 1, 3)
+    plt.subplot(3, 1, 3)
     plt.plot(time, states[:, 2], 'r')
     plt.xlabel('Time(s)')
     plt.ylabel('Absolute Rotational Velocity (deg/s)')
     plt.tight_layout()
+
+    # Toe Height Graph
+    toe_height = model.get_toe_height(states[:, 1])
+    plt.figure()
+    plt.title('Height of Toe versus Time')
+    plt.plot(time, toe_height, 'r')
+    plt.xlabel('Time(s)')
+    plt.ylabel('Toe Height (m)')
+    plt.tight_layout()
+
     plt.show()
 
 
