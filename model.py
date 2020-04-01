@@ -203,5 +203,7 @@ if __name__ == '__main__':
     # Initiate Model
     model = Model()    
     # Simulate Model
+    u_profile_1 = [0.2 for i in range(351)]
+    model.set_u_profile(u_profile_1)
     t, x = model.simulate()
     plot_graphs(model, t, x)
