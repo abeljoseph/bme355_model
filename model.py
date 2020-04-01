@@ -107,7 +107,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return:
         """
-        v_ce = self.d * (x_ext[3] - x[3])  # contraction speed
+        v_ce = self.d * (self.x_ext[3] - x[2])  # contraction speed
         v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
         if v_ce < 0:
             return ((1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))) / (x_ext[3] - x[2])
