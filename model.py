@@ -82,7 +82,7 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        return self.m_F*self.c_F*(x_ext[0]*np.sin(x[1]) - x_ext[1]*np.cos(x[1]))
+        return self.m_F*self.c_F*(x_ext[0]*np.sin(np.deg2rad(x[1])) - x_ext[1]*np.cos(x[1]))
 
     def get_torque_ela(self, x):
         """
@@ -138,7 +138,7 @@ class Model:
                 ankle_data.append([float(x) for x in list(str(line).strip().split(','))])
         ankle_height = [i[1] for i in ankle_data]
 
-        return ankle_height - self.l_foot*np.sin(ankle_angle)
+        return ankle_height - self.l_foot*np.sin(np.deg2rad(ankle_angle))
 
     def get_derivative(self, t, x):
         """
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     # Initiate Model
     model = Model()    
     # Simulate Model
-    u_profile_1 = [0.2 for i in range(351)]
+    u_profile_1 = [0.5 for i in range(351)]
     model.set_u_profile(u_profile_1)
     t, x = model.simulate()
     plot_graphs(model, t, x)
