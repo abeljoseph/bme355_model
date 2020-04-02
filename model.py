@@ -34,7 +34,7 @@ class Model:
         self.a4 = 0.19
         self.a5 = -1.79
         self.a = [self.a1, self.a2, self.a3, self.a4, self.a5]
-        self.g = 9.81
+        self.g = -9.81
 
         # External States
         ax = []
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     # Initiate Model
     model = Model()    
     # Simulate Model
-    u_profile_1 = [0 for i in range(351)]
+    u_profile_1 = [0.2 for i in range(351)]
     # u_profile_1 = np.concatenate(([0 for i in range(176)], [0.6 for i in range(175)]))
     model.set_u_profile(u_profile_1)
     t, x = model.simulate()
