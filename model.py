@@ -73,7 +73,7 @@ class Model:
     def get_torque_grav(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return: Gravity torque of the foot around the ankle
+        :return: gravity torque of the foot around the ankle
         """
         return -self.m_F*self.c_F*self.g*np.cos(np.deg2rad(x[1]))
 
@@ -88,14 +88,15 @@ class Model:
     def get_torque_ela(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return: Passive elastic torque around the ankle due to passive muscles and tissues
+        :return: passive elastic torque around the ankle due to passive muscles and tissues
         """
         return np.exp(self.a1 + self.a2 * x[1]) - np.exp(self.a3 + self.a4 * x[1]) + self.a5
 
     def get_force_fl(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return:
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
+        :return: non-linear force-length relationship linking the generated force to the length of the muscle
         """
         w, l_ce, l_ce_opt = self.w, self.get_length_ce(x, x_ext), self.l_ce_opt
         return exp(-(((l_ce - l_ce_opt) / (w * l_ce_opt))**2))
@@ -103,7 +104,8 @@ class Model:
     def get_force_fv(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return:
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
+        :return: non-linear force-velocity relationship 
         """
         v_ce = self.d * (x_ext[3] - x[2])  # contraction speed
         v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
@@ -112,24 +114,35 @@ class Model:
         return (1 + a_v*(v_ce/f_v2)) / (1 + v_ce/f_v2)
 
     def get_force_m(self, x, x_ext):
+        """
+        :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
+        :return: force produced by tibialis anterior through electrical stimulation
+        """
         f_fl, f_fv = self.get_force_fl(x, x_ext), self.get_force_fv(x, x_ext)
         return x[0] * self.f_max * f_fl * f_fv
 
     def get_length_mt(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return:
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
+        :return: length of the muscle-tendon complex
         """
         return self.l_mt0 + (x_ext[2] - x[1])*self.d
 
     def get_length_ce(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
-        :return:
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
+        :return: true length of the muscle
         """
         return self.get_length_mt(x, x_ext) - self.l_t
 
     def get_toe_height(self, ankle_angle):
+        """
+        :param ankle_angle:
+        :return:
+        """
         ankle_data = []
         with open('data_files/ankle_height_interpolated.csv') as f:
             for line in f:
