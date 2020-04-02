@@ -1,7 +1,8 @@
+from math import exp
+
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
-from math import exp
-import matplotlib.pyplot as plt
 
 
 class Model:
@@ -26,8 +27,8 @@ class Model:
         self.w = 0.56
         self.l_t = 0.223
         self.l_mt0 = 0.321
-        self.l_ce_opt = self.l_mt0 - self.l_t #TODO: Verify this value
-        self.l_foot = 0.26 #m
+        self.l_ce_opt = self.l_mt0 - self.l_t  # TODO: Verify this value
+        self.l_foot = 0.26  # m
         self.a1 = 2.1
         self.a2 = -0.08
         self.a3 = -7.97
@@ -54,13 +55,13 @@ class Model:
             for line in f:
                 a_shank.append([float(x) for x in list(str(line).strip().split(','))])
         self.a_shank = a_shank
-        
+
         a_shank1 = []
         with open('data_files/shank_velocity_interpolated.csv') as f:
             for line in f:
                 a_shank1.append([float(x) for x in list(str(line).strip().split(','))])
         self.a_shank1 = a_shank1
-        
+
         self.x_external = [self.ax, self.az, self.a_shank, self.a_shank1]
 
         self.u_profile = u_profile
@@ -69,13 +70,13 @@ class Model:
 
     def set_u_profile(self, u_profile):
         self.u_profile = u_profile
-    
+
     def get_torque_grav(self, x):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: gravity torque of the foot around the ankle
         """
-        return -self.m_F*self.c_F*self.g*np.cos(np.deg2rad(x[1]))
+        return -self.m_F * self.c_F * self.g * np.cos(np.deg2rad(x[1]))
 
     def get_torque_acc(self, x, x_ext):
         """
@@ -83,7 +84,7 @@ class Model:
         :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
-        return self.m_F*self.c_F*(x_ext[0]*np.sin(np.deg2rad(x[1])) - x_ext[1]*np.cos(np.deg2rad(x[1])))
+        return self.m_F * self.c_F * (x_ext[0] * np.sin(np.deg2rad(x[1])) - x_ext[1] * np.cos(np.deg2rad(x[1])))
 
     def get_torque_ela(self, x):
         """
@@ -99,8 +100,8 @@ class Model:
         :return: non-linear force-length relationship linking the generated force to the length of the muscle
         """
         w, l_ce, l_ce_opt = self.w, self.get_length_ce(x, x_ext), self.l_ce_opt
-        return exp(-(((l_ce - l_ce_opt) / (w * l_ce_opt))**2))
-    
+        return exp(-((l_ce - l_ce_opt) / (w * l_ce_opt)) ** 2)
+
     def get_force_fv(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
@@ -110,8 +111,8 @@ class Model:
         v_ce = self.d * (x_ext[3] - x[2])  # contraction speed
         v_max, a_v, f_v1, f_v2 = self.v_max, self.a_v, self.f_v1, self.f_v2
         if v_ce < 0:
-            return (1 - v_ce/v_max) / (1 + v_ce/(v_max*f_v1))
-        return (1 + a_v*(v_ce/f_v2)) / (1 + v_ce/f_v2)
+            return (1 - v_ce / v_max) / (1 + v_ce / (v_max * f_v1))
+        return (1 + a_v * (v_ce / f_v2)) / (1 + v_ce / f_v2)
 
     def get_force_m(self, x, x_ext):
         """
@@ -128,7 +129,7 @@ class Model:
         :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
         :return: length of the muscle-tendon complex
         """
-        return self.l_mt0 + (x_ext[2] - x[1])*self.d
+        return self.l_mt0 + (x_ext[2] - x[1]) * self.d
 
     def get_length_ce(self, x, x_ext):
         """
@@ -149,7 +150,7 @@ class Model:
                 ankle_data.append([float(x) for x in list(str(line).strip().split(','))])
         ankle_height = [i[1] for i in ankle_data]
 
-        return ankle_height[:len(ankle_angle)] + self.l_foot*np.sin(np.deg2rad(ankle_angle))
+        return ankle_height[:len(ankle_angle)] + self.l_foot * np.sin(np.deg2rad(ankle_angle))
 
     def get_derivative(self, t, x):
         """
@@ -157,12 +158,14 @@ class Model:
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
         :return: time derivatives of state variables
         """
-        u = self.u_profile[int(t*1000)]
-        x_ext = [i[int(t*1000)][1] for i in self.x_external]
+        u = self.u_profile[int(t * 1000)]
+        x_ext = [i[int(t * 1000)][1] for i in self.x_external]
 
-        return [(u - x[0]) * (u/self.T_act - (1 - u)/self.T_deact),
+        return [(u - x[0]) * (u / self.T_act - (1 - u) / self.T_deact),
                 x[2],
-                (1/self.J) * (self.get_force_m(x, x_ext)*self.d + self.get_torque_grav(x) + self.get_torque_acc(x, x_ext) + self.get_torque_ela(x) + self.B*(x_ext[3]-x[2]))]
+                (1 / self.J) * (self.get_force_m(x, x_ext) * self.d + self.get_torque_grav(x) + self.get_torque_acc(x,
+                                                                                                                    x_ext) + self.get_torque_ela(
+                    x) + self.B * (x_ext[3] - x[2]))]
 
     def simulate(self):
         """
@@ -212,7 +215,7 @@ def plot_graphs(model, time, states):
 
 if __name__ == '__main__':
     # Initiate Model
-    model = Model()    
+    model = Model()
     # Simulate Model
     u_profile_1 = [0.2 for i in range(351)]
     # u_profile_1 = np.concatenate(([0 for i in range(176)], [0.6 for i in range(175)]))
