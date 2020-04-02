@@ -80,6 +80,7 @@ class Model:
     def get_torque_acc(self, x, x_ext):
         """
         :param x: state variables [activation level; foot's absolute orientation wrt horizontal axis; foot's absolute rotational velocity]
+        :param x_ext: external states vector [ankle acceleration in x axis; ankle acceleration in z axis; shank's absolute orientation wrt horizontal axis; shank's absolute rotational velocity]
         :return: Torque induced by the movement of the ankle
         """
         return self.m_F*self.c_F*(x_ext[0]*np.sin(np.deg2rad(x[1])) - x_ext[1]*np.cos(np.deg2rad(x[1])))
