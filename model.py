@@ -140,8 +140,8 @@ class Model:
 
     def get_toe_height(self, ankle_angle):
         """
-        :param ankle_angle:
-        :return:
+        :param ankle_angle: the angle of the ankle, measured in degrees
+        :return: the height of the toe from the ground
         """
         ankle_data = []
         with open('data_files/ankle_height_interpolated.csv') as f:
